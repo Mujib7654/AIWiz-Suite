@@ -1,5 +1,5 @@
 const errorHandler = ('../middlewares/errorMiddleware');
-const userModel = require('../../models/userModel');
+const userModel = require('../models/userModel');
 const errorResponse = require('../utils/errorResponse');
 
 //JWT Token
@@ -34,7 +34,34 @@ exports.registerController = async (req, res, next) => {
 };
 
 //LOGIN
-exports.loginController = async () => {};
+exports.loginController = async (req, res, next) => {
+    try {
+        const {email, password} = req.body;
+        //validation
+        if(!email || !password) {
+            return next(new errorResponse('Please fill all the fields'));
+        }
+        const user = await userModel.findOne({email});
+        if(!user){
+            return next(new errorResponse('Invalid Credentials', 401));
+        }
+        const isMatch = await user.matchPassword(password);
+        if(!isMatch){
+            return next(new errorResponse('Invalid Credentials', 401));
+        }
+        //res
+        this.sendToken(user, 200, res);
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+};
 
 //LOGOUT
-exports.logoutController = async () => {};
+exports.logoutController = async (req, res) => {
+    res.clearCookie('refreshToken');
+    return res.status(200).json({
+        success : true,
+        message : "Logout Successfully",
+    });
+};
