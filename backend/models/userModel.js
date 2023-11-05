@@ -53,10 +53,6 @@ userSchema.methods.getSignedToken = function(res) {
             process.env.JWT_ACCESS_SECRET || 'secretkey' ,
             {expiresIn: process.env.JWT_ACCESS_EXPIREIN}
         );
-    } catch (error) {
-        console.log(`${error}`)
-    };
-    try {
         const refreshToken = JWT.sign(
             {id: this._id},
             process.env.JWT_REFRESH_TOKEN || 'refreshtoken' ,
@@ -66,7 +62,7 @@ userSchema.methods.getSignedToken = function(res) {
         console.log(`${error}`)
     };
 
-    //store in the form of cookie
+    //store jwt in cookie
     res.cookie('refreshToken', `${refreshToken}`, {
         maxAge : 86400 * 7000,
         httpOnly : true,
