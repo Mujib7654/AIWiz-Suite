@@ -16,7 +16,7 @@ dotenv.config();
 //database connection
 connectDB();
 
-//rest object
+//express rest object
 const app = express();
 
 //middlewares
