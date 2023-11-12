@@ -1,9 +1,57 @@
-import React from 'react'
+import React from 'react';
+import { Box, Typography, useTheme} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+
 
 const Navbar = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const loggedIn = JSON.parse(localStorage.getItem("authToken"));
+   //handle logout
+   const handleLogout = async () => {
+    try {
+      await axios.post("/api/v1/auth/logout");
+      localStorage.removeItem("authToken");
+      toast.success("logout successfully ");
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
-    <div>Navbar</div>
+    <Box
+      width={"100%"}
+      backgroundColor={theme.palette.background.alt}
+      p="1rem 6%"
+      textAlign={"center"}
+      sx={{ boxShadow: 3, mb: 2 }} >
+      <Typography variant="h1" color="primary" fontWeight="bold">
+        AiWiz Suite
+      </Typography>
+      {loggedIn ? (
+        <>
+          <NavLink to="/" p={1} style={{ marginRight: '10px' }}>
+            Home
+          </NavLink>
+          <NavLink to="/login" onClick={handleLogout} p={1} style={{ marginLeft: '10px' }}>
+            Logout
+          </NavLink>
+        </>
+      ) : (
+        <>
+          <NavLink to="/register" p={1} style={{ marginRight: '10px' }}>
+            Sign Up
+          </NavLink>
+          <NavLink to="/login" p={1} style={{ marginLeft: '10px' }}>
+            Sign In
+          </NavLink>
+        </>
+      )}
+    </Box>
   )
 }
 
-export default Navbar
+export default Navbar;
